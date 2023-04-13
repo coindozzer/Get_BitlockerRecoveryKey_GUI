@@ -1,4 +1,5 @@
-﻿Add-Type -AssemblyName PresentationFramework
+﻿#XAML Frame
+Add-Type -AssemblyName PresentationFramework
 $ErrorActionPreference = "Continue"
 [xml]$xaml = @"
 <Window x:Class="BitLockerRecoveryFrame.MainWindow"
@@ -19,15 +20,17 @@ $ErrorActionPreference = "Continue"
 </Window>
 "@ -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window' #-replace wird benötigt, wenn XAML aus Visual Studio kopiert wird.#> 
 
+#declare Reader and Window
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 $window = [Windows.markup.xamlreader]::Load($reader)
 
+#assign buttons and boxes
 $getPcButton = $window.FindName("GetKey")
 $pathTextBox = $window.FindName("EnterBox")
 $pathTextBox2 = $window.FindName("OutputBox")
 
 
-
+#logic
 $getPcButton.Add_Click({
         try {
             $pathTextBox2.Text = ""
@@ -51,13 +54,5 @@ $getPcButton.Add_Click({
          
     })
 
+#show window
 $window.ShowDialog()
-
-<#region start
-
-$computer = Get-ADComputer -Identity PC2490
-$recoveryInformation = Get-ADObject -Filter 'objectClass -eq "msFVE-RecoveryInformation"' -SearchBase $computer.DistinguishedName -Properties *
-$recoveryInformation.createTimeStamp
-$recoveryInformation.'msFVE-RecoveryPassword'
-
-#>
